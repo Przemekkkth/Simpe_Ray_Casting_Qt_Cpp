@@ -18,6 +18,7 @@ signals:
 private:
     void handlePlayerInput();
     void drawMap();
+    void drawSilhouette();
     Game m_game;
     QTimer m_timer;
     QElapsedTimer m_elapsedTimer;

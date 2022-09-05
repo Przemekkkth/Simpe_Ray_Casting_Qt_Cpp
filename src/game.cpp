@@ -6,6 +6,7 @@ float Game::fPlayerA = 0.0f;
 
 QString Game::map;
 
+const QString Game::PATH_TO_SILHOUETTE_PIXMAP = ":/res/silhouette.png";
 
 Game::Game()
 {

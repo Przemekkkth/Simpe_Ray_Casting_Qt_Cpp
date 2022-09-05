@@ -35,6 +35,8 @@ public:
     constexpr static const QColor GROUND_COLOR2 = QColor( 97,  74, 53);
     constexpr static const QColor GROUND_COLOR3 = QColor( 36,  31, 26);
     constexpr static const QColor GROUND_COLOR4 = QColor(  0,   0,  0);
+
+    static const QString PATH_TO_SILHOUETTE_PIXMAP;
 };
 
 #endif // GAME_H

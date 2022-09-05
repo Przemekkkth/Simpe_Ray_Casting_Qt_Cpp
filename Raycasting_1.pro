@@ -11,3 +11,6 @@ HEADERS += \
     src/game.h \
     src/gamescene.h \
     src/view.h
+
+RESOURCES += \
+    resource.qrc

@@ -145,6 +145,7 @@ void GameScene::loop()
         addItem(pItem);
 
         drawMap();
+        drawSilhouette();
     }
 }
 
@@ -201,6 +202,12 @@ void GameScene::drawMap()
     image.setPixelColor( (int)Game::fPlayerY, (int)Game::fPlayerX, QColor(Qt::green));
     QGraphicsPixmapItem* pItem = new QGraphicsPixmapItem(QPixmap::fromImage(image.scaled(112,112)));
     pItem->setPos(0, 0);
+    addItem(pItem);
+}
+
+void GameScene::drawSilhouette()
+{
+    QGraphicsPixmapItem* pItem = new QGraphicsPixmapItem(QPixmap(Game::PATH_TO_SILHOUETTE_PIXMAP));
     addItem(pItem);
 }
 
