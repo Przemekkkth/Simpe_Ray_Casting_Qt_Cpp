@@ -143,6 +143,8 @@ void GameScene::loop()
         QGraphicsPixmapItem* pItem = new QGraphicsPixmapItem(QPixmap::fromImage(image));
         pItem->setPos(0,0);
         addItem(pItem);
+
+        drawMap();
     }
 }
 
@@ -177,6 +179,29 @@ void GameScene::handlePlayerInput()
     {
         Game::fPlayerA += (Game::fSpeed * 0.75f);
     }
+}
+
+void GameScene::drawMap()
+{
+    QImage image = QImage(Game::nMapWidth, Game::nMapHeight, QImage::Format_RGB32);
+    for(int x = 0; x < Game::nMapWidth; ++x)
+    {
+        for(int y = 0; y < Game::nMapHeight; ++y)
+        {
+            if(Game::map[y*Game::nMapWidth + x] == '#')
+            {
+                image.setPixelColor(x,y, QColor(Qt::red));
+            }
+            else
+            {
+                image.setPixelColor(x,y, QColor(Qt::yellow));
+            }
+        }
+    }
+    image.setPixelColor( (int)Game::fPlayerY, (int)Game::fPlayerX, QColor(Qt::green));
+    QGraphicsPixmapItem* pItem = new QGraphicsPixmapItem(QPixmap::fromImage(image.scaled(112,112)));
+    pItem->setPos(0, 0);
+    addItem(pItem);
 }
 
 void GameScene::keyPressEvent(QKeyEvent *event)

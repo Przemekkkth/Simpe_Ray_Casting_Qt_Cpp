@@ -17,6 +17,7 @@ private slots:
 signals:
 private:
     void handlePlayerInput();
+    void drawMap();
     Game m_game;
     QTimer m_timer;
     QElapsedTimer m_elapsedTimer;
