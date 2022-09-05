@@ -20,6 +20,10 @@ public:
     constexpr static const float fSpeed = 0.1f;
 
     static QString map;
+
+    constexpr static const QColor SKY_COLOR0 = QColor(237, 235, 235);
+
+
     constexpr static const QColor SHADE_COLOR0 = QColor(237, 235, 235);
     constexpr static const QColor SHADE_COLOR1 = QColor(186, 184, 184);
     constexpr static const QColor SHADE_COLOR2 = QColor(138, 135, 135);

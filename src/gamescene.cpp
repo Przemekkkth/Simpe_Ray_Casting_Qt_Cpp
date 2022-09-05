@@ -119,7 +119,7 @@ void GameScene::loop()
                 // Each Row
                 if(y <= nCeiling)
                 {
-                    image.setPixelColor(x, y, QColor(Qt::black));
+                    image.setPixelColor(x, y, QColor(Qt::blue));
                 }
                 else if(y > nCeiling && y <= nFloor)
                 {
@@ -168,7 +168,8 @@ void GameScene::handlePlayerInput()
             Game::fPlayerY += cosf(Game::fPlayerA) * Game::fSpeed;
         }
     }
-    else if(m_leftPressed)
+
+    if(m_leftPressed)
     {
         Game::fPlayerA -= (Game::fSpeed * 0.75f);
     }
