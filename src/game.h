@@ -10,7 +10,7 @@ public:
     Game();
     constexpr static int nMapWidth = 16;
     constexpr static int nMapHeight = 16;
-    constexpr static int GRID_SIZE = 32;
+    constexpr static int GRID_SIZE = 45;
     constexpr static const QSize RESOLUTION = QSize(nMapWidth*GRID_SIZE, nMapHeight*GRID_SIZE);
     static float fPlayerX;
     static float fPlayerY;
