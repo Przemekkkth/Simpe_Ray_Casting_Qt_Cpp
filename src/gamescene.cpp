@@ -233,7 +233,7 @@ void GameScene::keyPressEvent(QKeyEvent *event)
         break;
     case Qt::Key_Z:
     {
-        renderScene();
+        //renderScene();
     }
         break;
     }
