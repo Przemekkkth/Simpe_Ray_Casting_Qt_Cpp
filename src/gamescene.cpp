@@ -4,6 +4,8 @@
 #include <vector>
 #include <QGraphicsRectItem>
 #include <QGraphicsPixmapItem>
+#include <QDir>
+#include <QPainter>
 
 GameScene::GameScene(QObject *parent)
     : QGraphicsScene(parent), m_loopSpeed(int(1000.0f/60.0f)), m_loopTime(0.0f), m_deltaTime(0.0f),
@@ -14,6 +16,7 @@ GameScene::GameScene(QObject *parent)
     m_elapsedTimer.start();
     m_timer.start(int(1000.0f/60.0f));
     setBackgroundBrush(QBrush(Qt::black));
+
 }
 
 void GameScene::loop()
@@ -27,59 +30,43 @@ void GameScene::loop()
         m_loopTime -= m_loopSpeed;
 
         handlePlayerInput();
-        qDebug() << "X " << Game::fPlayerX << " Y " << Game::fPlayerY << " A " << Game::fPlayerA;
 
         QImage image = QImage(m_game.RESOLUTION.width(), m_game.RESOLUTION.height(), QImage::Format_RGB32);
 
         for(int x = 0; x < Game::RESOLUTION.width(); x += 1)
         {
-            // For each column, calculate the projected ray angle into world space
             float fRayAngle = (Game::fPlayerA - Game::fFOV/2.0f) + ((float)x / (float)Game::RESOLUTION.width()) * Game::fFOV;
 
-            // Find distance to wall
-            float fStepSize = 0.1f;		  // Increment size for ray casting, decrease to increase
-            float fDistanceToWall = 0.0f; //                                      resolution
+            float fStepSize = 0.1f;
+            float fDistanceToWall = 0.0f; //
 
-            bool bHitWall = false;		// Set when ray hits wall block
-            bool bBoundary = false;		// Set when ray hits boundary between two wall blocks
+            bool bHitWall = false;
+            bool bBoundary = false;
 
-            float fEyeX = sinf(fRayAngle); // Unit vector for ray in player space
+            float fEyeX = sinf(fRayAngle);
             float fEyeY = cosf(fRayAngle);
 
-            // Incrementally cast ray from player, along ray angle, testing for
-            // intersection with a block
             while (!bHitWall && fDistanceToWall < Game::fDepth)
             {
                 fDistanceToWall += fStepSize;
                 int nTestX = (int)(Game::fPlayerX + fEyeX * fDistanceToWall);
                 int nTestY = (int)(Game::fPlayerY + fEyeY * fDistanceToWall);
 
-                // Test if ray is out of bounds
                 if (nTestX < 0 || nTestX >= Game::nMapWidth || nTestY < 0 || nTestY >= Game::nMapHeight)
                 {
-                    bHitWall = true;			// Just set distance to maximum depth
+                    bHitWall = true;
                     fDistanceToWall = Game::fDepth;
                 }
                 else
                 {
-                    // Ray is inbounds so test to see if the ray cell is a wall block
                     if (Game::map[nTestX * Game::nMapWidth + nTestY] == '#')
                     {
-                        // Ray has hit wall
                         bHitWall = true;
-
-                        // To highlight tile boundaries, cast a ray from each corner
-                        // of the tile, to the player. The more coincident this ray
-                        // is to the rendering ray, the closer we are to a tile
-                        // boundary, which we'll shade to add detail to the walls
                         std::vector<std::pair<float, float>> p;
 
-                        // Test each corner of hit tile, storing the distance from
-                        // the player, and the calculated dot product of the two rays
                         for (int tx = 0; tx < 2; tx++)
                             for (int ty = 0; ty < 2; ty++)
                             {
-                                // Angle of corner to eye
                                 float vy = (float)nTestY + ty - Game::fPlayerY;
                                 float vx = (float)nTestX + tx - Game::fPlayerX;
                                 float d = sqrt(vx*vx + vy*vy);
@@ -87,10 +74,8 @@ void GameScene::loop()
                                 p.push_back(std::make_pair(d, dot));
                             }
 
-                        // Sort Pairs from closest to farthest
                         sort(p.begin(), p.end(), [](const std::pair<float, float> &left, const std::pair<float, float> &right) {return left.first < right.first; });
 
-                        // First two/three are closest (we will never see all four)
                         float fBound = 0.01;
                         if (acos(p.at(0).second) < fBound) bBoundary = true;
                         if (acos(p.at(1).second) < fBound) bBoundary = true;
@@ -99,11 +84,9 @@ void GameScene::loop()
                 }
             }
 
-            // Calculate distance to ceiling and floor
             int nCeiling = (float)(Game::RESOLUTION.width()/2.0) - Game::RESOLUTION.height() / ((float)fDistanceToWall);
             int nFloor = Game::RESOLUTION.height()  - nCeiling;
 
-            // Shader walls based on distance
             QColor nShade = Game::SHADE_COLOR4;
             if (fDistanceToWall <= Game::fDepth / 4.0f)			nShade = Game::SHADE_COLOR0;	// Very close
             else if (fDistanceToWall < Game::fDepth / 3.0f)		nShade = Game::SHADE_COLOR1;
@@ -127,7 +110,6 @@ void GameScene::loop()
                 }
                 else // Floor
                 {
-                    // Shade floor based on distance
                     float b = 1.0f - (((float)y -Game::RESOLUTION.height()/2.0f) / ((float)Game::RESOLUTION.height() / 2.0f));
                     if (b < 0.25)		nShade = Game::GROUND_COLOR0;
                     else if (b < 0.5)	nShade = Game::GROUND_COLOR1;
@@ -211,6 +193,19 @@ void GameScene::drawSilhouette()
     addItem(pItem);
 }
 
+void GameScene::renderScene()
+{
+    static int index = 0;
+    QString fileName = QDir::currentPath() + QDir::separator() + "screen" + QString::number(index++) + ".png";
+    QRect rect = sceneRect().toAlignedRect();
+    QImage image(rect.size(), QImage::Format_ARGB32);
+    image.fill(Qt::transparent);
+    QPainter painter(&image);
+    render(&painter);
+    image.save(fileName);
+    qDebug() << "saved " << fileName;
+}
+
 void GameScene::keyPressEvent(QKeyEvent *event)
 {
     if(true)
@@ -236,8 +231,12 @@ void GameScene::keyPressEvent(QKeyEvent *event)
         m_rightPressed = true;
     }
         break;
+    case Qt::Key_Z:
+    {
+        renderScene();
     }
-
+        break;
+    }
     QGraphicsScene::keyPressEvent(event);
 }
 

@@ -19,6 +19,7 @@ private:
     void handlePlayerInput();
     void drawMap();
     void drawSilhouette();
+    void renderScene();
     Game m_game;
     QTimer m_timer;
     QElapsedTimer m_elapsedTimer;
