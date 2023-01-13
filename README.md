@@ -15,3 +15,5 @@ qmake && make
 ## Addons
 * [Qt](https://www.qt.io/) - Cross-Platform software for embedded & desktop
 * [Github](https://github.com/OneLoneCoder/CommandLineFPS) - inspiration, great tutorial for ray casting
+* [yt]() - gameplay
+* [Play online]() - game hosted on GitHub
